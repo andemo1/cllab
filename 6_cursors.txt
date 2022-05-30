@@ -1,0 +1,46 @@
+Create database ass7;
+Use ass7;
+Create table o_rollcall(rno int, name varchar(20), addr varchar(30), primary key(rno));
+Create table n_rollcall(rno int, name varchar(20), addr varchar(30));
+Desc o_rollcall;
+Desc n_rollcall;
+Insert into o_rollcall values(1, ‘sunny’, ‘wable town’);
+Insert into o_rollcall values(2, ‘harshit’, ‘naxal forest’);
+Insert into o_rollcall values(3, ‘vivek’, ‘latur road’);
+Insert into o_rollcall values(4, ‘sahil’, ‘mumbai floods’);
+Select * from o_rollcall;
+Insert into n_rollcall values(1, ‘sunny’, ‘wable town’);
+Insert into n_rollcall values(2, ‘harshit’, ‘naxal forest’);
+Insert into n_rollcall values(3, ‘vivek’, ‘latur road’);
+Select * from n_rollcall;
+Insert into o_rollcall values(5, ‘bitboi’, ‘bihar city bihar’);
+Select * from o_rollcall;
+
+
+delimiter //
+create procedure n1(IN rno1 int)
+begin
+declare rno2 int;
+declare exit_cond boolean;
+declare c1 cursor for select rno from o_rollcall where rno>rno1;
+declare continue handler for not found set exit_cond=TRUE;
+open c1;
+l1: loop
+fetch c1 into rno2;
+if not exists(select * from n_rollcall where rno= rno2) then
+insert into n_rollcall select * from o_rollcall where rno=rno2;
+end if;
+if exit_cond then
+close c1;
+leave l1;
+end if;
+end loop l1;
+end;
+//
+
+
+Delimiter ;
+
+
+Call n1(3);
+Select * from n_rollcall;
